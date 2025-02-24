@@ -1,2 +1,37 @@
 <h1>Bienvenido al Chatbot Airbnb</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Airbnb</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input { padding: 10px; width: 300px; }
+        button { padding: 10px; cursor: pointer; }
+        .result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Analizador de Anuncios Airbnb</h1>
+    <form action="/analizar" method="post">
+        <input type="text" name="url" placeholder="Ingresa el enlace del anuncio de Airbnb" required>
+        <button type="submit">Analizar</button>
+    </form>
+
+    {% if resultado %}
+    <div class="result">
+        <h2>Resultados del Análisis</h2>
+        <p><strong>Título:</strong> {{ resultado.titulo }}</p>
+        <p><strong>Descripción:</strong> {{ resultado.descripcion }}</p>
+        <h3>Recomendaciones:</h3>
+        <ul>
+            {% for rec in resultado.recomendaciones %}
+            <li>{{ rec }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</body>
+</html>
 
