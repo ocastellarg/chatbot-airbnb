@@ -83,9 +83,20 @@ def obtener_competencia(zona):
     except Exception as e:
         return "Error obteniendo competencia", "Error obteniendo competencia"
 def verificar_conexion(url):
-    """ Prueba la conexión con Airbnb y muestra el HTML obtenido. """
+    """ Prueba la conexión con Airbnb y muestra parte del HTML para verificar dónde está el título. """
     headers = {"User-Agent": "Mozilla/5.0"}
     response = requests.get(url, headers=headers)
+    
     print("Código de respuesta:", response.status_code)
-    print("HTML recibido:", response.text[:1000])  # Imprime los primeros 1000 caracteres del HTML
-
+    
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Imprime los primeros 2000 caracteres del HTML
+    print("HTML recibido:", response.text[:2000])
+    
+    # Prueba si hay un <h1> en el HTML
+    titulo_h1 = soup.find('h1')
+    if titulo_h1:
+        print("Título encontrado en <h1>:", titulo_h1.text.strip())
+    else:
+        print("No se encontró ningún <h1> en el HTML.")
