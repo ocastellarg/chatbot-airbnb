@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
 @app.route('/test-conexion', methods=['GET'])
 def test_conexion():
-    url = "https://www.airbnb.com/rooms/12345678"  # Reemplázalo con un enlace real de Airbnb
+    url = "https://es-l.airbnb.com/rooms/1112472362544295200?guests=1&adults=1&s=67&unique_share_id=d55a289f-0e5e-4209-8318-c8d110ff1fbc"
     from scraper import verificar_conexion
     verificar_conexion(url)
     return "Verificación completada. Revisa los logs."
