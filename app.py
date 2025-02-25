@@ -51,4 +51,11 @@ def test_conexion():
     from scraper import verificar_conexion
     verificar_conexion(url)
     return "Verificación completada. Revisa los logs."
+@app.route('/test-selenium', methods=['GET'])
+def test_selenium():
+    from scraper import obtener_titulo
+    url = "https://www.airbnb.com/rooms/12345678"  # Reemplázalo con un enlace real de Airbnb
+    titulo = obtener_titulo(url)
+    return f"Título extraído: {titulo}"
+
 
