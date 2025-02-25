@@ -82,3 +82,10 @@ def obtener_competencia(zona):
         return precio_promedio, ocupacion_promedio
     except Exception as e:
         return "Error obteniendo competencia", "Error obteniendo competencia"
+def verificar_conexion(url):
+    """ Prueba la conexión con Airbnb y muestra el HTML obtenido. """
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(url, headers=headers)
+    print("Código de respuesta:", response.status_code)
+    print("HTML recibido:", response.text[:1000])  # Imprime los primeros 1000 caracteres del HTML
+

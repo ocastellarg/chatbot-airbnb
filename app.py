@@ -44,3 +44,11 @@ def analizar():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/test-conexion', methods=['GET'])
+def test_conexion():
+    url = "https://www.airbnb.com/rooms/12345678"  # Reemplázalo con un enlace real de Airbnb
+    from scraper import verificar_conexion
+    verificar_conexion(url)
+    return "Verificación completada. Revisa los logs."
+
