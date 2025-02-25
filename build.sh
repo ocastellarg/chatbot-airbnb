@@ -4,16 +4,20 @@
 # Crear directorios locales para Chrome y ChromeDriver
 mkdir -p ~/chrome ~/chromedriver
 
-# Descargar e instalar Google Chrome desde fuente alternativa
+# Descargar e instalar Google Chrome desde una fuente estable
 wget -q -O ~/chrome/chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-dpkg -x ~/chrome/chrome.deb ~/chrome/
-export CHROME_PATH="$HOME/chrome/opt/google/chrome/chrome"
+ar x ~/chrome/chrome.deb
+tar -xvf data.tar.xz -C ~/chrome/
+mv ~/chrome/opt/google/chrome ~/chrome/
+
+# Configurar la variable de entorno para Chrome
+export CHROME_PATH="$HOME/chrome/google-chrome"
 chmod +x $CHROME_PATH
 
 # Verificar instalación de Chrome
 $CHROME_PATH --version || echo "Error instalando Google Chrome"
 
-# Descargar e instalar ChromeDriver desde fuente alternativa
+# Descargar e instalar ChromeDriver desde una fuente alternativa
 wget -q -O ~/chromedriver/chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.105/linux64/chromedriver-linux64.zip"
 unzip ~/chromedriver/chromedriver.zip -d ~/chromedriver/
 export CHROMEDRIVER_PATH="$HOME/chromedriver/chromedriver-linux64/chromedriver"
