@@ -1,27 +1,29 @@
 #!/usr/bin/env bash
-# Instalar Google Chrome y ChromeDriver en Render
+# Instalar Google Chrome y ChromeDriver sin usar sudo en Render
 
-# Actualizar paquetes
-sudo apt-get update
+# Crear un directorio local para Chrome
+mkdir -p ~/chrome
+cd ~/chrome
 
-# Instalar dependencias necesarias
-sudo apt-get install -y wget unzip curl
+# Descargar e instalar Google Chrome (versión estable)
+wget -q -O chrome-linux.zip "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+ar x chrome-linux.zip
+tar -xf data.tar.xz
+mv ./opt/google/chrome ./chrome
+rm -rf *.deb *.zip *.tar.xz
 
-# Descargar e instalar Google Chrome
-wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome.deb || sudo apt-get -f install -y
-rm google-chrome.deb
+# Configurar la variable de entorno para Chrome
+export CHROME_PATH="$HOME/chrome/chrome"
 
 # Verificar instalación de Chrome
-google-chrome --version
+$CHROME_PATH --version || echo "Error instalando Google Chrome"
 
 # Descargar e instalar ChromeDriver
-CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f1)
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-unzip chromedriver_linux64.zip
-sudo mv chromedriver /usr/bin/chromedriver
-sudo chmod +x /usr/bin/chromedriver
+mkdir -p ~/chromedriver
+cd ~/chromedriver
+wget -q -O chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json | jq -r '.versions[-1].downloads.chromedriver[0].url')"
+unzip chromedriver.zip
+mv chromedriver-linux64/chromedriver ./chromedriver
+chmod +x ./chromedriver
 
-# Verificar instalación de ChromeDriver
-chromedriver --version
+# Configurar l
