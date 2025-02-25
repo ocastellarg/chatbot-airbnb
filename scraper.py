@@ -83,8 +83,15 @@ def obtener_competencia(zona):
     except Exception as e:
         return "Error obteniendo competencia", "Error obteniendo competencia"
 def verificar_conexion(url):
-    """ Prueba la conexión con Airbnb y muestra parte del HTML para verificar dónde está el título. """
-    headers = {"User-Agent": "Mozilla/5.0"}
+    """ Prueba la conexión con Airbnb con cabeceras avanzadas para evitar bloqueos. """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.google.com/",
+        "DNT": "1",
+        "Connection": "keep-alive"
+    }
+    
     response = requests.get(url, headers=headers)
     
     print("Código de respuesta:", response.status_code)
