@@ -58,4 +58,12 @@ def test_selenium():
     titulo = obtener_titulo(url)
     return f"Título extraído: {titulo}"
 
-
+@app.route('/test-chrome', methods=['GET'])
+def test_chrome():
+    import subprocess
+    try:
+        chrome_version = subprocess.check_output(["google-chrome-stable", "--version"]).decode("utf-8")
+        driver_version = subprocess.check_output(["chromedriver", "--version"]).decode("utf-8")
+        return f"Google Chrome: {chrome_version} <br> ChromeDriver: {driver_version}"
+    except Exception as e:
+        return f"Error verificando Chrome/ChromeDriver: {str(e)}"
