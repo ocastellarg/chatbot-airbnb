@@ -14,14 +14,33 @@ def obtener_precio(html):
     except:
         return "No disponible"
 
-def obtener_titulo(html):
-    """ Extrae el título del anuncio. """
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+
+def obtener_titulo(url):
+    """ Usa Selenium para obtener el título de un anuncio en Airbnb. """
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")  # Ejecutar en segundo plano
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Configurar el driver para Render
+    options.binary_location = "/usr/bin/google-chrome-stable"
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    driver.get(url)
+
     try:
-        soup = BeautifulSoup(html, 'html.parser')
-        titulo_element = soup.find('h1', {'class': re.compile('.*_14i3z6h.*')})
-        return titulo_element.text.strip() if titulo_element else "No disponible"
+        titulo_element = driver.find_element(By.TAG_NAME, "h1")
+        titulo = titulo_element.text.strip()
     except:
-        return "No disponible"
+        titulo = "No disponible"
+
+    driver.quit()
+    return titulo
+
 
 def obtener_caracteristicas(html):
     """ Extrae características destacadas del anuncio. """
