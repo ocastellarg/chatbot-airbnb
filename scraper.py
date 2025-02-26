@@ -126,3 +126,19 @@ def verificar_conexion(url):
         print("Título encontrado en <h1>:", titulo_h1.text.strip())
     else:
         print("No se encontró ningún <h1> en el HTML.")
+
+def obtener_titulo(html):
+    """ Extrae el título del anuncio de Airbnb. """
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        print("HTML recibido en obtener_titulo:\n", soup.prettify())  # Agregar esta línea
+
+        titulo_element = soup.find('h1', {'class': re.compile('.*_14i3z6h.*|.*_1xu9tpch.*')})
+        if titulo_element:
+            return titulo_element.text.strip()
+
+        titulo_alt = soup.find('meta', {'property': 'og:title'})
+        return titulo_alt['content'].strip() if titulo_alt else "No disponible"
+    except Exception as e:
+        print("Error en obtener_titulo:", str(e))
+        return "No disponible"
