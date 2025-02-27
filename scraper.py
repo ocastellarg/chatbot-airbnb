@@ -2,26 +2,28 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
+import sys
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+
+# -------------------- BEAUTIFULSOUP --------------------
 
 def obtener_precio(html):
     """ Extrae el precio del anuncio. """
     try:
         soup = BeautifulSoup(html, 'html.parser')
         precio_element = soup.find('div', {'class': re.compile('.*_tyxjp1.*')})
-        if precio_element:
-            return precio_element.text.strip()
-        return "No disponible"
+        return precio_element.text.strip() if precio_element else "No disponible"
     except:
         return "No disponible"
-
 
 def obtener_caracteristicas(html):
     """ Extrae características destacadas del anuncio. """
     try:
         soup = BeautifulSoup(html, 'html.parser')
-        caracteristicas = []
-        for item in soup.find_all('div', {'class': re.compile('.*_1dotkqq.*')}):
-            caracteristicas.append(item.text.strip())
+        caracteristicas = [item.text.strip() for item in soup.find_all('div', {'class': re.compile('.*_1dotkqq.*')})]
         return caracteristicas if caracteristicas else ["No disponibles"]
     except:
         return ["No disponibles"]
@@ -30,11 +32,7 @@ def obtener_fotos(html):
     """ Extrae las URLs de las fotos del anuncio. """
     try:
         soup = BeautifulSoup(html, 'html.parser')
-        fotos = []
-        for img in soup.find_all('img'):
-            src = img.get('data-src') or img.get('src')
-            if src and 'airbnb' in src:
-                fotos.append(src)
+        fotos = [img.get('data-src') or img.get('src') for img in soup.find_all('img') if img.get('src') and 'airbnb' in img.get('src')]
         return fotos[:5] if fotos else ["No disponibles"]
     except:
         return ["No disponibles"]
@@ -43,9 +41,7 @@ def obtener_resenas(html):
     """ Extrae las reseñas más recientes del anuncio. """
     try:
         soup = BeautifulSoup(html, 'html.parser')
-        resenas = []
-        for resena in soup.find_all('span', {'class': re.compile('.*_a7a5sx.*')}):
-            resenas.append(resena.text.strip())
+        resenas = [resena.text.strip() for resena in soup.find_all('span', {'class': re.compile('.*_a7a5sx.*')})]
         return resenas[:3] if resenas else ["No hay reseñas disponibles"]
     except:
         return ["No hay reseñas disponibles"]
@@ -59,20 +55,13 @@ def obtener_competencia(zona):
         time.sleep(2)
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        precios = []
-        for precio in soup.find_all('span', {'class': re.compile(r'\$[0-9]+')}):
-            precio_texto = precio.text.replace('$', '').strip()
-            if precio_texto.isdigit():
-                precios.append(int(precio_texto))
-
+        precios = [int(precio.text.replace('$', '').strip()) for precio in soup.find_all('span', {'class': re.compile(r'\$[0-9]+')}) if precio.text.replace('$', '').strip().isdigit()]
+        
         if not precios:
             return "No disponible", "No disponible"
 
-        precio_promedio = sum(precios) / len(precios)
-        ocupacion_promedio = 75  
-
-        return precio_promedio, ocupacion_promedio
-    except Exception as e:
+        return sum(precios) / len(precios), 75  # Ocupación estimada
+    except:
         return "Error obteniendo competencia", "Error obteniendo competencia"
 
 def verificar_conexion(url):
@@ -86,43 +75,19 @@ def verificar_conexion(url):
     }
     
     response = requests.get(url, headers=headers)
-    
     print("Código de respuesta:", response.status_code)
     
     soup = BeautifulSoup(response.text, 'html.parser')
-    
-    # Imprime los primeros 2000 caracteres del HTML
-    print("HTML recibido:", response.text[:2000])
-    
-    # Prueba si hay un <h1> en el HTML
+    print("HTML recibido:", response.text[:2000])  # Depuración
+
     titulo_h1 = soup.find('h1')
-    if titulo_h1:
-        print("Título encontrado en <h1>:", titulo_h1.text.strip())
-    else:
-        print("No se encontró ningún <h1> en el HTML.")
+    print("Título encontrado en <h1>:", titulo_h1.text.strip() if titulo_h1 else "No se encontró ningún <h1> en el HTML.")
 
 # -------------------- SELENIUM --------------------
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-import time
-
-import sys
-
-import sys
-
-import sys
-import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
 def obtener_titulo(url):
     """ Usa Selenium para obtener el título de un anuncio en Airbnb. """
-    print("Iniciando Selenium...")
+    print("\n🔍 Iniciando Selenium para obtener título...\n")
     sys.stdout.flush()
 
     options = webdriver.ChromeOptions()
@@ -134,30 +99,36 @@ def obtener_titulo(url):
     options.binary_location = "/usr/bin/google-chrome-stable"
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    print("Navegador Chrome iniciado correctamente.")
+    print("✅ Navegador Chrome iniciado correctamente.")
     sys.stdout.flush()
 
     driver.get(url)
-    print("URL cargada:", url)
+    print(f"🌐 URL cargada en el navegador: {url}")
     sys.stdout.flush()
 
-    time.sleep(5)  # Esperar a que el contenido cargue
+    # Esperar a que el contenido cargue completamente
+    time.sleep(5)
+
+    # Desplazamiento para cargar contenido dinámico
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(3)
 
     try:
-        print("Intentando encontrar el título...")
+        print("🔎 Buscando el título en la página...")
         sys.stdout.flush()
+
         titulo_element = driver.find_element(By.TAG_NAME, "h1")
         titulo = titulo_element.text.strip()
-        print("Título encontrado:", titulo)
+        print(f"✅ Título encontrado: {titulo}")
+    
     except Exception as e:
         titulo = "No disponible"
-        print("Error obteniendo título:", str(e))
+        print(f"❌ Error obteniendo título: {str(e)}")
     
     sys.stdout.flush()
-
+    
     driver.quit()
-    print("Navegador cerrado.")
+    print("🚪 Navegador cerrado.")
     sys.stdout.flush()
 
     return titulo
-
