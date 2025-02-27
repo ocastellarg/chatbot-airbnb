@@ -113,8 +113,18 @@ import sys
 
 import sys
 
+import sys
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+
 def obtener_titulo(url):
     """ Usa Selenium para obtener el título de un anuncio en Airbnb. """
+    print("Iniciando Selenium...")
+    sys.stdout.flush()
+
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")  # Ejecutar en segundo plano
     options.add_argument("--no-sandbox")
@@ -124,24 +134,30 @@ def obtener_titulo(url):
     options.binary_location = "/usr/bin/google-chrome-stable"
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
+    print("Navegador Chrome iniciado correctamente.")
+    sys.stdout.flush()
+
     driver.get(url)
+    print("URL cargada:", url)
+    sys.stdout.flush()
 
-    # ⏳ Esperar para permitir que el contenido cargue
-    time.sleep(5)
-
-    # 🔽 Forzar el scroll para cargar contenido dinámico de Airbnb
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(3)
+    time.sleep(5)  # Esperar a que el contenido cargue
 
     try:
+        print("Intentando encontrar el título...")
+        sys.stdout.flush()
         titulo_element = driver.find_element(By.TAG_NAME, "h1")
         titulo = titulo_element.text.strip()
         print("Título encontrado:", titulo)
-        sys.stdout.flush()  # 🔄 Asegura que el log se registre en Render
     except Exception as e:
         titulo = "No disponible"
         print("Error obteniendo título:", str(e))
-        sys.stdout.flush()  # 🔄 Asegura que el log se registre en Render
+    
+    sys.stdout.flush()
 
     driver.quit()
+    print("Navegador cerrado.")
+    sys.stdout.flush()
+
     return titulo
+
