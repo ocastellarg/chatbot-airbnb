@@ -108,7 +108,8 @@ options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/opt/render/chrome/chr
 driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH", "/opt/render/chromedriver/chromedriver"), options=options)
 
 
-    print("✅ Navegador Chrome iniciado correctamente.")
+print("✅ Navegador Chrome iniciado correctamente.")
+
     sys.stdout.flush()
 
     driver.get(url)
