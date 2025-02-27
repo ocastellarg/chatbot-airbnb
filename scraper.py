@@ -96,7 +96,7 @@ def obtener_titulo(url):
     options.add_argument("--disable-dev-shm-usage")
 
     # 📌 Configurar Chrome y ChromeDriver para Render
-    options.binary_location = "/usr/bin/google-chrome"
+    options.binary_location = "/usr/bin/chromium"
     driver_path = "/usr/bin/chromedriver"
 
     # 📌 Inicializar ChromeDriver con la ruta correcta
