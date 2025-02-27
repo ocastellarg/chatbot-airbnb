@@ -7,8 +7,6 @@ import os  # 📌 Importar módulo para variables de entorno
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
 
 # -------------------- BEAUTIFULSOUP --------------------
 
@@ -97,12 +95,13 @@ def obtener_titulo(url):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # 📌 Configurar Chrome para Render
-    options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/opt/render/chrome/chrome")
+    # 📌 Configurar Chrome y ChromeDriver para Render
+    options.binary_location = "/usr/bin/google-chrome"
+    driver_path = "/usr/bin/chromedriver"
 
-    # 📌 Inicializar ChromeDriver correctamente
+    # 📌 Inicializar ChromeDriver con la ruta correcta
     driver = webdriver.Chrome(
-        service=Service(os.getenv("CHROMEDRIVER_PATH", "/opt/render/chromedriver/chromedriver")),
+        service=Service(driver_path),
         options=options
     )
 
@@ -117,8 +116,9 @@ def obtener_titulo(url):
     time.sleep(5)
 
     # Desplazamiento para cargar contenido dinámico
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(3)
+    for _ in range(3):  # Desplazarse varias veces para asegurar que carga bien
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
 
     try:
         print("🔎 Buscando el título en la página...")
