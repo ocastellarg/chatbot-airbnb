@@ -120,7 +120,6 @@ def obtener_titulo(url):
     options.binary_location = "/usr/bin/google-chrome-stable"
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    print("Cargando página:", url)
     driver.get(url)
 
     # ⏳ Esperar para permitir que el contenido cargue
@@ -130,15 +129,13 @@ def obtener_titulo(url):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(3)
 
-    # 📌 Imprimir HTML recibido para depuración
-    print("HTML de la página:\n", driver.page_source[:2000])
-
     try:
         titulo_element = driver.find_element(By.TAG_NAME, "h1")
         titulo = titulo_element.text.strip()
-        print("Título encontrado:", titulo)
-    except:
+        print("Título encontrado:", titulo)  # 🟢 Mensaje de depuración para los logs
+    except Exception as e:
         titulo = "No disponible"
+        print("Error obteniendo título:", str(e))  # 🛑 Captura errores en los logs
 
     driver.quit()
     return titulo
