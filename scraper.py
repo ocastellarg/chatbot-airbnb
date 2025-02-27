@@ -74,6 +74,7 @@ def obtener_competencia(zona):
         return precio_promedio, ocupacion_promedio
     except Exception as e:
         return "Error obteniendo competencia", "Error obteniendo competencia"
+
 def verificar_conexion(url):
     """ Prueba la conexión con Airbnb con cabeceras avanzadas para evitar bloqueos. """
     headers = {
@@ -100,20 +101,44 @@ def verificar_conexion(url):
     else:
         print("No se encontró ningún <h1> en el HTML.")
 
-def obtener_titulo(html):
-    """ Extrae el título del anuncio de Airbnb. """
+# -------------------- SELENIUM --------------------
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+
+def obtener_titulo(url):
+    """ Usa Selenium para obtener el título de un anuncio en Airbnb. """
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")  # Ejecutar en segundo plano
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Configurar el driver para Render
+    options.binary_location = "/usr/bin/google-chrome-stable"
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    print("Cargando página:", url)
+    driver.get(url)
+
+    # ⏳ Esperar para permitir que el contenido cargue
+    time.sleep(5)
+
+    # 🔽 Forzar el scroll para cargar contenido dinámico de Airbnb
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(3)
+
+    # 📌 Imprimir HTML recibido para depuración
+    print("HTML de la página:\n", driver.page_source[:2000])
+
     try:
-        soup = BeautifulSoup(html, 'html.parser')
+        titulo_element = driver.find_element(By.TAG_NAME, "h1")
+        titulo = titulo_element.text.strip()
+        print("Título encontrado:", titulo)
+    except:
+        titulo = "No disponible"
 
-        # Agregar print para ver el HTML recibido en los logs de Render
-        print("HTML recibido en obtener_titulo:\n", soup.prettify())
-
-        titulo_element = soup.find('h1', {'class': re.compile('.*_14i3z6h.*|.*_1xu9tpch.*')})
-        if titulo_element:
-            return titulo_element.text.strip()
-
-        titulo_alt = soup.find('meta', {'property': 'og:title'})
-        return titulo_alt['content'].strip() if titulo_alt else "No disponible"
-    except Exception as e:
-        print("Error en obtener_titulo:", str(e))
-        return "No disponible"
+    driver.quit()
+    return titulo
