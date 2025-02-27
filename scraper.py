@@ -7,6 +7,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+import chromedriver_autoinstaller  # 📌 Nueva importación para instalar ChromeDriver automáticamente
+
+# 📌 Instalar automáticamente ChromeDriver en la versión correcta
+chromedriver_autoinstaller.install()
 
 # -------------------- BEAUTIFULSOUP --------------------
 
@@ -95,8 +99,10 @@ def obtener_titulo(url):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # Configurar el driver para Render
-    options.binary_location = "/usr/bin/google-chrome-stable"
+    # 📌 Configurar Chrome para Render
+    options.binary_location = "/opt/render/chrome/chrome"
+
+    # 📌 Inicializar ChromeDriver correctamente
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     print("✅ Navegador Chrome iniciado correctamente.")
