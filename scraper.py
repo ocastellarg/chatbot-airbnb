@@ -100,10 +100,13 @@ def obtener_titulo(url):
     options.add_argument("--disable-dev-shm-usage")
 
     # 📌 Configurar Chrome para Render
-    options.binary_location = "/opt/render/chrome/chrome"
+    import os  # 📌 Importar el módulo para leer variables de entorno
+options.binary_location = os.getenv("GOOGLE_CHROME_BIN", "/opt/render/chrome/chrome")
+
 
     # 📌 Inicializar ChromeDriver correctamente
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(executable_path=os.getenv("CHROMEDRIVER_PATH", "/opt/render/chromedriver/chromedriver"), options=options)
+
 
     print("✅ Navegador Chrome iniciado correctamente.")
     sys.stdout.flush()
