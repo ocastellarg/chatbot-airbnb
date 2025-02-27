@@ -109,6 +109,10 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
+import sys
+
+import sys
+
 def obtener_titulo(url):
     """ Usa Selenium para obtener el título de un anuncio en Airbnb. """
     options = webdriver.ChromeOptions()
@@ -132,10 +136,12 @@ def obtener_titulo(url):
     try:
         titulo_element = driver.find_element(By.TAG_NAME, "h1")
         titulo = titulo_element.text.strip()
-        print("Título encontrado:", titulo)  # 🟢 Mensaje de depuración para los logs
+        print("Título encontrado:", titulo)
+        sys.stdout.flush()  # 🔄 Asegura que el log se registre en Render
     except Exception as e:
         titulo = "No disponible"
-        print("Error obteniendo título:", str(e))  # 🛑 Captura errores en los logs
+        print("Error obteniendo título:", str(e))
+        sys.stdout.flush()  # 🔄 Asegura que el log se registre en Render
 
     driver.quit()
     return titulo
